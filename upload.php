@@ -2,17 +2,28 @@
 require('header.php');
 // php อ้างอิงข้อมูลจากแท็ก input type="file" ด้วยคำสั่ง $_FILES["ชื่อ"]["พารามิเตอร์"]
 //เช่น อ้างอิงชื่อไฟล์ $_FILES["picture"]["name"]
-//เช่น อ้างอิงขนาดไฟล์ $_FILES["picture"]["size"]
+//เช่น อ้างอิงขนาดไฟล์ 
+
 // exit(json_encode(["picture"=>$_FILES["picture"]]));
 // อ่านค่า userid เพื่อใช้เปลี่ยนชื่อไฟล์ก่อน upload
 
 // กรณีเพิ่มข้อมูล ใช้ค่า max
+if($_POST["userid"]==""){
+
+
 $sql=$con->query("SELECT MAX(userid) AS userid FROM tbuser");
+/* เป็นการอ่านข้อมูลจากตารางข้อมูลที่สร้างขึ้นมาใหม่ โดยจะอ่านข้อมูลทีละแถว และจะอ่านข้อมูลทีละคอลัมน์ */
 $result=$sql-> fetch_array();
 $userid=$result["userid"];
+}else{
+    $userid =$_POST["userid"];
+}
 //upload
+
 if ($_FILES["picture"]){
+   
     $name=$_FILES["picture"]["name"];
+   /* การอ่านข้อมูลจากตารางข้อมูลที่สร้างขึ้นมาใหม่ โดยจะอ่านข้อมูลทีละแถว และจะอ่านข้อมูลทีละคอลัมน์ */
     $tmp_name=$_FILES["picture"]["tmp_name"];
     //เปลี่ยนชื่อ
     $f=explode(".",$name);

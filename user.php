@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == "GET") {
 // เขียนคำสั่งเพื่อ post หรือ insert ข้อมูล
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // อ่านข้อมูลที่ส่งมาแบบ post
+    /* This is a way to get the data from the request. */
     $data = json_decode(file_get_contents("php://input"));
     // อ่านค่า
     $name = $data->name;
@@ -48,17 +49,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 if ($_SERVER["REQUEST_METHOD"] == "DELETE") {
     // อ่านค่าที่ส่งมา
     $userid = $_GET["userid"];
+    $picture =$_GET["picture"];
     $sql = $con->query("DELETE FROM tbuser WHERE userid='$userid' ");
     if ($sql) {
-        exit(json_encode(['status' => 'delete success']));
+        if(unlink("images/$picture")){
+              exit(json_encode(['status' => 'delete success']));
+        }else{
+            exit(json_encode(['status' => 'delete file success']));
+        }
+      
     } else {
         exit(json_encode(['status' => 'delete error']));
     }
 }
-// เขียนคำสั่งเพื่อ put หรือ insert ข้อมูล
+// เขียนคำสั่งเพื่อ update ข้อมูล
 if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     // อ่านข้อมูลที่ส่งมาแบบ put
-    $data = json_decode(file_get_contents("php://put"));
+    $data = json_decode(file_get_contents("php://input"));
+   
     // อ่านค่า
     $userid = $data->userid;
     $name = $data->name;
@@ -69,6 +77,14 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     $username = $data->username;
     $password = $data->password;
     $statusid = $data->statusid;
+    $picture=$data-> picture;
+    if($picture !=""){//มีชื่อไฟล์
+        $f = explode('.',$picture); //$f[0] เก็บชื่อไฟล์เก่า
+        //$f[1] เก็บนามสกุลไฟล์
+        $newfliename=$userid.".".$f[1]  ; //ส่วนขยาย
+        $sql =$con ->query("UPDATE tbuser SET picture='$newfliename' WHERE userid='$userid' " );
+
+      }
     $sql = $con->query("UPDATE INTO tbuser SET name='$name' , gender='$gender' , address='$address' , telephone='$telephone' , email=' $email' ,username='$username' , password='$password',
     statusid='$statusid' WHERE userid=' $userid' ");
     if ($sql) {
@@ -76,4 +92,4 @@ if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     } else {
         exit(json_encode(['status' => 'update error']));
     }
-}
+ }
